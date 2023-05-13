@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <http:listener-config name="retriveffastgorouteschedulesapi-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
-    </http:listener-config>
-    <apikit:config name="retriveffastgorouteschedulesapi-config" api="retriveffastgorouteschedulesapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    
     <flow name="retriveffastgorouteschedulesapi-main">
         <http:listener config-ref="retriveffastgorouteschedulesapi-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -123,58 +120,28 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="get:\(transporttype)\(transportcompany)\route:retriveffastgorouteschedulesapi-config">
-        <ee:transform doc:name="Transform Message">
+    <sub-flow name="retriveffastgorouteschedulesapiSub_Flow" doc:id="252701fb-aaac-4ef0-860a-9a881f4adf1d" >
+		<ee:transform doc:name="Transform Message">
             <ee:variables>
-                <ee:set-variable variableName="transporttype">attributes.uriParams.'transporttype'</ee:set-variable>
-                <ee:set-variable variableName="transportcompany">attributes.uriParams.'transportcompany'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+                <ee:set-variable variableName="transporttype"><![CDATA[attributes.uriParams.'transporttype']]></ee:set-variable>
+                <ee:set-variable variableName="transportcompany"><![CDATA[attributes.uriParams.'transportcompany']]></ee:set-variable>
+				<ee:set-variable variableName="transactionid"><![CDATA[%dw 2.0
 output application/json
 ---
-[
-  {
-    departurelocationcode: "BEN-SG",
-    arrivallocation: "KLG-MY"
-  }, 
-  {
-    departurelocationcode: "BEN-SG",
-    arrivallocation: "BU-MY"
-  }
-]]]></ee:set-payload>
-            </ee:message>
+attributes.headers.transactionid]]></ee:set-variable>
+            </ee:variables>
         </ee:transform>
+	</sub-flow>
+	<flow name="get:\(transporttype)\(transportcompany)\route:retriveffastgorouteschedulesapi-config">
+		<flow-ref doc:name="Flow Reference" doc:id="17023357-0bcb-48bd-a87a-27e90b60ed71" name="retriveffastgorouteschedulesapiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2ec3aef7-31dd-45bd-9cd8-c67cfc9eaec7" message="Request initiate for getroute fastgo transactionid:#[vars.transactionid]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="019087b3-78bf-43ff-b7e6-e1b377c3217b" name="fastgogetroutesapiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="49ef1fe7-1ac2-4ace-a651-99a37a34ad73" message="Response sent for getroute fastgo transactionid:#[vars.transactionid]"/>
     </flow>
     <flow name="get:\(transporttype)\(transportcompany)\schedule:retriveffastgorouteschedulesapi-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="transporttype">attributes.uriParams.'transporttype'</ee:set-variable>
-                <ee:set-variable variableName="transportcompany">attributes.uriParams.'transportcompany'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    departuredatetime: "2019-04-20T16:41:41:0902",
-    fromlocation: "BEN-SG",
-    tolocation: "KLG-MY",
-    availableseats: 20
-  }, 
-  {
-    departuredatetime: "2019-04-20T16:41:41:0902",
-    fromlocation: "BEN-SG",
-    tolocation: "KLG-MY",
-    availableseats: 50
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="84997557-95b7-4998-8d39-4cb561837f39" name="retriveffastgorouteschedulesapiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c4dfe0e8-d118-47b7-bcb5-c1b4c76eab62" message="Request initiate for getschedule fastgo transactionid:#[vars.transactionid]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="cc832123-3eb7-443f-ab29-730a2aa3cdd4" name="fastgogetschedulesapiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5ea639af-b4f8-4fa5-86bc-b3e89ef5728e" message="Response sent for getschedule fastgo transactionid:#[vars.transactionid]"/>
     </flow>
 </mule>
