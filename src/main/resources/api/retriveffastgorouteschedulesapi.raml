@@ -1,0 +1,68 @@
+#%RAML 1.0
+title: retrivefFastgorouteSchedulesapi
+description: This is Raml is to Retreive Route schedule for FastGO
+
+types:
+  getroute: !include /libraries/route/datatypes/route200resdataType.raml
+  commonerror: !include /libraries/common/datatypes/commonErrorrdataType.raml
+  getshedules: !include /libraries/schedule/datatypes/schedulers200dataType.raml
+
+uses:
+  common: /libraries/common/commonBuslibrary.raml
+
+/{transporttype}:
+  /{transportcompany}:
+    /route:
+      get:
+        is:
+          - common.transactionid
+        responses:
+           200:
+             body:
+              application/json:
+               type: getroute
+               example: !include /libraries/route/examples/routeres200example.json
+           400:
+             body:
+              application/json:
+               type: commonerror
+               example: !include /libraries/common/examples/400res.json
+           404:
+             body:
+              application/json:
+               type: commonerror
+               example: !include /libraries/common/examples/404res.json
+           500:
+             body:
+              application/json:
+               type: commonerror
+               example: !include /libraries/common/examples/500res.json
+                              
+    /schedule:
+      get:
+        is:
+          - common.transactionid
+          - common.departurelocationcode
+          - common.destinationlocationcode
+        responses:
+           200:
+             body:
+              application/json:
+               type: getshedules
+               example: !include /libraries/schedule/examples/scheduleres200example.json
+           400:
+             body:
+              application/json:
+               type: commonerror
+               example: !include /libraries/common/examples/400res.json 
+           404:
+             body:
+              application/json:
+               type: commonerror
+               example: !include /libraries/common/examples/404res.json
+           500:
+             body:
+              application/json:
+                type: commonerror
+                example: !include /libraries/common/examples/500res.json
+    

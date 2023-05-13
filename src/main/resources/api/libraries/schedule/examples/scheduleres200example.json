@@ -1,0 +1,14 @@
+[
+  {
+    "departuredatetime": "2019-04-20T16:41:41:0902",
+    "fromlocation": "BEN-SG",
+    "tolocation": "KLG-MY",
+    "availableseats": 20
+  },
+  {
+    "departuredatetime": "2019-04-20T16:41:41:0902",
+    "fromlocation": "BEN-SG",
+    "tolocation": "KLG-MY",
+    "availableseats": 50
+  }
+]
